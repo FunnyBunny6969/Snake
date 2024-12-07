@@ -13,6 +13,13 @@ void setScreen() {
     CONSOLE_FONT_INFOEX cfi;
     SMALL_RECT windowSize = { 0, 0, 79, 30 }; // (левая, верхняя, правая, нижняя)
     SetConsoleWindowInfo(hConsole, TRUE, &windowSize);
+
+    CONSOLE_CURSOR_INFO cursorInfo;
+    // Получаем текущую информацию о курсоре
+    GetConsoleCursorInfo(hConsole, &cursorInfo);
+    // Скрываем курсор
+    cursorInfo.bVisible = FALSE; // Устанавливаем видимость курсора в FALSE
+    SetConsoleCursorInfo(hConsole, &cursorInfo);
 }
 
 void setFont() {
@@ -33,9 +40,13 @@ void draw(int** MAP, int snake[2148][2], int& len) {
     for (int i = 0; i < 30; i++) {
         for (int j = 0;j < 80;j++) {
             for (int k = 0; k < len; k++) {
-                if (snake[k][0] < 79) {
-                    if (i == snake[k][1] && j == snake[k][0]) {
-                        cout << "@";
+                if (snake[k][0] < 79 && snake[k][1] < 30) {
+                    if (   (i == snake[k][1]) 
+                        && (j == snake[k][0])) {
+                        if (k == 0)
+                            cout << "@";
+                        else
+                            cout << "o";
                         printed = true;
                     }   
                 }
@@ -72,8 +83,12 @@ void main() {
     int snake[2148][2];
     snake[0][0] = 40;
     snake[0][1] = 15;
-    int len = 1;
-
+    //генерируем хвост
+    int len = 10;
+    for (int tail = 1; tail < len; tail++) {
+		snake[tail][0] = 40;
+		snake[tail][1] = 15+tail;
+    }
 
 	#define UP 72
 	#define DOWN 80
@@ -85,19 +100,24 @@ void main() {
 
     bool run = true;
     while (run) {
+        //захватываем кнопки
         if (_kbhit()) {
             switch (_getch()) {
             case UP:
-                dir = 'U';
+                if(dir != 'D')
+					dir = 'U';
                 break;
             case DOWN:
-                dir = 'D';
+                if(dir != 'U')
+					dir = 'D';
                 break;
             case LEFT:
-                dir = 'L';
+                if(dir != 'R')
+					dir = 'L';
                 break;
             case RIGHT:
-                dir = 'R';
+                if(dir != 'L')
+					dir = 'R';
                 break;
             case ESC:
                 run = false;
@@ -106,6 +126,15 @@ void main() {
                 break;
             }
         }
+        //пересчитываем хвост
+        if (len > 1) {
+            for (int i = (len-1); i > 0;i--) {
+                snake[i][0] = snake[i - 1][0];
+                snake[i][1] = snake[i - 1][1];
+            }
+        }
+
+        //перемещаем голову
         switch (dir) {
         case 'U':
             snake[0][1] -= 1;
@@ -114,14 +143,18 @@ void main() {
             snake[0][1] += 1;
             break;
         case 'L':
-            snake[0][0] -= 2;
+            snake[0][0] -= 1;
             break;
         case 'R':
-            snake[0][0] += 2;
+            snake[0][0] += 1;
             break;
         }
         gotoStart();
         draw(MAP, snake, len);
-        Sleep(200);
+        if (dir == 'U' || dir == 'D')
+            Sleep(150);
+        else
+            Sleep(45);
     }
+    delete MAP;
 }
