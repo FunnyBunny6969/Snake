@@ -11,7 +11,7 @@ void gotoStart() {
 void setScreen() {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_FONT_INFOEX cfi;
-    SMALL_RECT windowSize = { 0, 0, 79, 29 }; // (левая, верхняя, правая, нижняя)
+    SMALL_RECT windowSize = { 0, 0, 79, 30 }; // (левая, верхняя, правая, нижняя)
     SetConsoleWindowInfo(hConsole, TRUE, &windowSize);
 }
 
@@ -28,15 +28,26 @@ void setFont() {
     SetCurrentConsoleFontEx(hConsole, FALSE, &cfi);
 }
 
-void draw(int** MAP) {
+void draw(int** MAP, int snake[2148][2], int& len) {
+    bool printed = false;
     for (int i = 0; i < 30; i++) {
         for (int j = 0;j < 80;j++) {
-            if (MAP[i][j] == 0)
-                cout << " ";
-            else if (MAP[i][j] == 1)
-                cout << "#";
-            else if (MAP[i][j] == 2)
-                cout << "@";
+            for (int k = 0; k < len; k++) {
+                if (snake[k][0] < 79) {
+                    if (i == snake[k][1] && j == snake[k][0]) {
+                        cout << "@";
+                        printed = true;
+                    }   
+                }
+            }
+
+            if (printed == false) {
+                if (MAP[i][j] == 0)
+                    cout << " ";
+                else if (MAP[i][j] == 1)
+                    cout << "#";
+            }
+            printed = false;
         }
         cout << endl;
     }
@@ -57,9 +68,12 @@ void main() {
                 MAP[i][j] = 0;
         }   
     }
-    MAP[15][40] = 2;
+    
+    int snake[2148][2];
+    snake[0][0] = 40;
+    snake[0][1] = 15;
+    int len = 1;
 
-    //draw(MAP);
 
 	#define UP 72
 	#define DOWN 80
@@ -67,22 +81,23 @@ void main() {
 	#define RIGHT 77
 	#define ESC 27
 
-    gotoStart();
+    char dir = 'U';
+
     bool run = true;
     while (run) {
         if (_kbhit()) {
             switch (_getch()) {
             case UP:
-                cout << "U";
+                dir = 'U';
                 break;
             case DOWN:
-                cout << "D";
+                dir = 'D';
                 break;
             case LEFT:
-                cout << "L";
+                dir = 'L';
                 break;
             case RIGHT:
-                cout << "R";
+                dir = 'R';
                 break;
             case ESC:
                 run = false;
@@ -91,9 +106,22 @@ void main() {
                 break;
             }
         }
-        else
-            cout << " ";
-        //gotoStart();
-        Sleep(50);
+        switch (dir) {
+        case 'U':
+            snake[0][1] -= 1;
+            break;
+        case 'D':
+            snake[0][1] += 1;
+            break;
+        case 'L':
+            snake[0][0] -= 2;
+            break;
+        case 'R':
+            snake[0][0] += 2;
+            break;
+        }
+        gotoStart();
+        draw(MAP, snake, len);
+        Sleep(200);
     }
 }
