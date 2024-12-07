@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include <Windows.h>
+#include <conio.h> 
 using namespace std;
 
 void gotoStart() {
@@ -58,12 +59,41 @@ void main() {
     }
     MAP[15][40] = 2;
 
-    draw(MAP);
+    //draw(MAP);
+
+	#define UP 72
+	#define DOWN 80
+	#define LEFT 75
+	#define RIGHT 77
+	#define ESC 27
 
     gotoStart();
-
-
-    cin.get();
-    system("cls");
-    system("pause");
+    bool run = true;
+    while (run) {
+        if (_kbhit()) {
+            switch (_getch()) {
+            case UP:
+                cout << "U";
+                break;
+            case DOWN:
+                cout << "D";
+                break;
+            case LEFT:
+                cout << "L";
+                break;
+            case RIGHT:
+                cout << "R";
+                break;
+            case ESC:
+                run = false;
+                break;
+            default:
+                break;
+            }
+        }
+        else
+            cout << " ";
+        //gotoStart();
+        Sleep(50);
+    }
 }
