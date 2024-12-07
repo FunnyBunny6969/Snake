@@ -10,7 +10,7 @@ void gotoStart() {
 void setScreen() {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_FONT_INFOEX cfi;
-    SMALL_RECT windowSize = { 0, 0, 80, 30 }; // (левая, верхняя, правая, нижняя)
+    SMALL_RECT windowSize = { 0, 0, 79, 29 }; // (левая, верхняя, правая, нижняя)
     SetConsoleWindowInfo(hConsole, TRUE, &windowSize);
 }
 
@@ -27,13 +27,40 @@ void setFont() {
     SetCurrentConsoleFontEx(hConsole, FALSE, &cfi);
 }
 
+void draw(int** MAP) {
+    for (int i = 0; i < 30; i++) {
+        for (int j = 0;j < 80;j++) {
+            if (MAP[i][j] == 0)
+                cout << " ";
+            else if (MAP[i][j] == 1)
+                cout << "#";
+            else if (MAP[i][j] == 2)
+                cout << "@";
+        }
+        cout << endl;
+    }
+}
 
 void main() {
     setScreen();
     setFont();
 
-    for (int i = 0;i < 80;i++)
-        cout << "#";
+
+    int** MAP = new int* [30];
+    for (int i = 0; i < 30; i++) {
+        MAP[i] = new int[80];
+        for (int j = 0;j < 80;j++){
+            if (j == 0 || j == 79 || i == 0 || i == 29)
+                MAP[i][j] = 1;
+            else
+                MAP[i][j] = 0;
+        }   
+    }
+    MAP[15][40] = 2;
+
+    draw(MAP);
+
+    gotoStart();
 
 
     cin.get();

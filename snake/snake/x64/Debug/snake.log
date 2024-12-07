@@ -1,4 +1,4 @@
 ﻿  snake.cpp
 K:\$MAIN$\БГТУ\ОПИ\lab12\snake\snake\snake.cpp(12,25): warning C4101: cfi: неиспользованная локальная переменная
-K:\$MAIN$\БГТУ\ОПИ\lab12\snake\snake\snake.cpp(32,13): warning C4326: возвращаемый тип "main" должен быть "int", а не "void"
+K:\$MAIN$\БГТУ\ОПИ\lab12\snake\snake\snake.cpp(44,13): warning C4326: возвращаемый тип "main" должен быть "int", а не "void"
   snake.vcxproj -> K:\$MAIN$\БГТУ\ОПИ\lab12\snake\x64\Debug\snake.exe
