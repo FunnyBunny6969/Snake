@@ -3,6 +3,8 @@
 #include <conio.h>
 #include <cstdlib> 
 #include <ctime>   
+#include <fstream> 
+#include <string>  
 using namespace std;
 
 void gotoStart() {
@@ -74,7 +76,25 @@ void draw(int** MAP, int snake[2148][2], int& len, bool& apple_exsists, int appl
         }
         cout << endl;
     }
-    cout << "SCORE\t" << len;
+    cout << "SCORE\t" << len<<"\t\t";
+}
+
+void Start() {
+	gotoStart();
+	ifstream inputFile("StartScreen.txt");
+    string line;
+    while (getline(inputFile, line))
+        cout << line << std::endl; 
+    inputFile.close(); 
+}
+
+void GameOver() {
+	gotoStart();
+	ifstream inputFile("GameOverScreen.txt");
+    string line;
+    while (getline(inputFile, line))
+        cout << line << std::endl; 
+    inputFile.close(); 
 }
 
 void main() {
@@ -96,24 +116,27 @@ void main() {
     }
     
     int snake[2148][2];
-    snake[0][0] = 40;
-    snake[0][1] = 15;
+    snake[0][0] = 10;
+    snake[0][1] = 20;
     //генерируем хвост
-    int len = 1;
+    int len = 40;
     for (int tail = 1; tail < len; tail++) {
-		snake[tail][0] = 40;
-		snake[tail][1] = 15+tail;
+		snake[tail][0] = snake[0][0] + 1;
+		snake[tail][1] = snake[0][1];
     }
 
     int apple[2];
     bool apple_exsists = false;
+
+    //Стартовое окно
+    Start();
+    cin.get();
 
 	#define UP 72
 	#define DOWN 80
 	#define LEFT 75
 	#define RIGHT 77
 	#define ESC 27
-
 
     char dir = 'U';
     bool run = true;
@@ -159,6 +182,24 @@ void main() {
             apple_exsists = false; //сообщаем что яблоко надо перегенерировать
         }
 
+        //проверяем столкновение со стенами
+        if (snake[0][0] == 0 ||
+            snake[0][0] == 79 ||
+            snake[0][1] == 0 ||
+            snake[0][1] == 29) {
+            run = false;
+            Sleep(2000); //даём 2сек чтобы понять ошибку
+        }
+
+        //если змея наезжает на хвост, она его откусывает
+        //for (int i = 1;i < len;i++) {
+         //   if (snake[0][0] == snake[i][0] &&
+          //      snake[0][1] == snake[i][1]) {
+           //     len = i - 2;
+            //    break;
+           // }
+        //}
+
 
         //пересчитываем хвост
         if (len > 1) {
@@ -185,13 +226,22 @@ void main() {
         }
 
         //перерисовываем кадр
-        gotoStart();
-        draw(MAP, snake, len, apple_exsists, apple);
+        if (run) {
+            gotoStart();
+            draw(MAP, snake, len, apple_exsists, apple);
+        }
 
         if (dir == 'U' || dir == 'D')
             Sleep(150); //символ примерно вдвое больше в длину чер в ширину
         else            //поэтому для перемещения по вертикали и горизонтали разная задержка
             Sleep(45);  //чтобы змея во всех направления ползола +- одинаково
+        
+        
+        if (!run) {
+            GameOver();
+            cin.get();
+        }
     }
+
     delete MAP;
 }
