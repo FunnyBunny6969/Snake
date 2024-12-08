@@ -54,6 +54,7 @@ void draw(int** MAP, int snake[2148][2], int& len, bool& apple_exsists, int appl
                         else
                             cout << "o";
                         printed = true;
+                        break;
                     }   
                 }
             }
@@ -76,7 +77,7 @@ void draw(int** MAP, int snake[2148][2], int& len, bool& apple_exsists, int appl
         }
         cout << endl;
     }
-    cout << "SCORE\t" << len<<"\t\t";
+    cout << "SCORE\t" << len<<"        "; //пробелами очищаем поле счёта(на случай если змея стала короче)
 }
 
 void Start() {
@@ -119,9 +120,9 @@ void main() {
     snake[0][0] = 10;
     snake[0][1] = 20;
     //генерируем хвост
-    int len = 40;
+    int len = 50;
     for (int tail = 1; tail < len; tail++) {
-		snake[tail][0] = snake[0][0] + 1;
+		snake[tail][0] = snake[0][0] + tail;
 		snake[tail][1] = snake[0][1];
     }
 
@@ -144,7 +145,7 @@ void main() {
         //если яблока нет, генерируем
         if (apple_exsists == false) {
             apple[0] = rand() % 78 + 1;
-            apple[1] = rand() % 29 + 1;
+            apple[1] = rand() % 28 + 1;
             apple_exsists = true;
         }
         //захватываем кнопки
@@ -192,13 +193,13 @@ void main() {
         }
 
         //если змея наезжает на хвост, она его откусывает
-        //for (int i = 1;i < len;i++) {
-         //   if (snake[0][0] == snake[i][0] &&
-          //      snake[0][1] == snake[i][1]) {
-           //     len = i - 2;
-            //    break;
-           // }
-        //}
+        for (int i = 1;i < len;i++) {
+            if (snake[0][0] == snake[i][0] &&
+                snake[0][1] == snake[i][1]) {
+                len = i;
+                break;
+            }
+        }
 
 
         //пересчитываем хвост
@@ -242,6 +243,4 @@ void main() {
             cin.get();
         }
     }
-
-    delete MAP;
 }
