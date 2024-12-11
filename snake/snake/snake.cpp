@@ -12,10 +12,10 @@ void gotoStart() {
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
-void setScreen() {
+void setScreen(int& WIDTH, int&HEIGHT) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_FONT_INFOEX cfi;
-    SMALL_RECT windowSize = { 0, 0, 79, 30 }; // (левая, верхняя, правая, нижняя)
+    SMALL_RECT windowSize = { 0, 0, WIDTH - 1, HEIGHT }; // (левая, верхняя, правая, нижняя)
     SetConsoleWindowInfo(hConsole, TRUE, &windowSize);
 
     CONSOLE_CURSOR_INFO cursorInfo;
@@ -30,7 +30,7 @@ void setFont() {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_FONT_INFOEX cfi;
     cfi.cbSize = sizeof(cfi);
-    cfi.dwFontSize.Y = 24; // Высота шрифта
+    cfi.dwFontSize.Y = 20; // Высота шрифта
     cfi.dwFontSize.X = 0; // Ширина шрифта
     cfi.FontFamily = FF_DONTCARE; // Тип шрифта
     cfi.FontWeight = FW_BOLD; // Нормальная жирность
@@ -39,20 +39,28 @@ void setFont() {
     SetCurrentConsoleFontEx(hConsole, FALSE, &cfi);
 }
 
-void draw(int** MAP, int snake[2148][2], int& len, bool& apple_exsists, int apple[2]) {
+void draw(int snake[2148][2], int& len, bool& apple_exsists, int apple[2],
+    int&WIDTH, int&HEIGHT,
+    char& head, char& body, char& field, char& ch_apple, char& wall ) {
     bool printed = false;
-    for (int i = 0; i < 30; i++) {
-        for (int j = 0;j < 80;j++) {
+    for (int i = 0; i < HEIGHT; i++) {
+        for (int j = 0;j < WIDTH;j++) {
 
             //рисуем змею
             for (int k = 0; k < len; k++) {
-                if (snake[k][0] < 79 && snake[k][1] < 30) {
+                if (snake[k][0] < (WIDTH) && snake[k][1] < HEIGHT) {
                     if (   (i == snake[k][1]) 
                         && (j == snake[k][0])) {
-                        if (k == 0) 
-                            cout << "@"; //выделяем голову
-                        else
-                            cout << "o";
+                        if (k == 0) {
+                            cout << "\033[48;5;9m";
+                            cout << head; //выделяем голову
+                            cout << "\033[40m";
+                        }
+                        else {
+                            cout << "\033[48;5;11m";
+                            cout << body;
+                            cout << "\033[40m";
+                        }
                         printed = true;
                         break;
                     }   
@@ -61,17 +69,18 @@ void draw(int** MAP, int snake[2148][2], int& len, bool& apple_exsists, int appl
             //если есть то нарисуем яблоко
             if (apple_exsists == true && printed == false) {
                 if (apple[0] == j && apple[1] == i) {
-                    cout << "$";
+                    cout << ch_apple;
                     printed = true;
                 }
             }
             
             //если в клетке не яблоко и не змея то рисуем кусок карты
+            //MAP убрали, тк в процессе подход к отрисовке изменился, теперь можно без MAP
             if (printed == false) {
-                if (MAP[i][j] == 0)
-                    cout << " ";
-                else if (MAP[i][j] == 1)
-                    cout << "#";
+                if (j == 0 || j == (WIDTH - 1) || i == 0 || i == (HEIGHT - 1))
+                    cout << wall;
+                else
+                    cout << field;
             }
             printed = false;
         }
@@ -99,23 +108,21 @@ void GameOver() {
 }
 
 void main() {
+    int WIDTH = 80;     //Для нового режима потребуется динамически изменяемое поле
+    int HEIGHT = 30;
+
+    char ch_apple = '$';
+    char field = ' ';
+    char head = '@';
+    char body = 'o';
+    char wall = '#';
+
+    
     srand(static_cast<unsigned int>(time(0)));
-    setScreen();
+    setScreen(WIDTH, HEIGHT);
     setFont();
     system("color 0a"); //по приколу делаем всё зелёным
 
-
-    int** MAP = new int* [30];
-    for (int i = 0; i < 30; i++) {
-        MAP[i] = new int[80];
-        for (int j = 0;j < 80;j++){
-            if (j == 0 || j == 79 || i == 0 || i == 29)
-                MAP[i][j] = 1;
-            else
-                MAP[i][j] = 0;
-        }   
-    }
-    
     int snake[2148][2];
     snake[0][0] = 10;
     snake[0][1] = 20;
@@ -144,8 +151,8 @@ void main() {
     while (run) {
         //если яблока нет, генерируем
         if (apple_exsists == false) {
-            apple[0] = rand() % 78 + 1;
-            apple[1] = rand() % 28 + 1;
+            apple[0] = rand() % (WIDTH-2) + 1;
+            apple[1] = rand() % (HEIGHT-2) + 1;
             apple_exsists = true;
         }
         //захватываем кнопки
@@ -185,9 +192,9 @@ void main() {
 
         //проверяем столкновение со стенами
         if (snake[0][0] == 0 ||
-            snake[0][0] == 79 ||
+            snake[0][0] == (WIDTH-1) ||
             snake[0][1] == 0 ||
-            snake[0][1] == 29) {
+            snake[0][1] == (HEIGHT-1)) {
             run = false;
             Sleep(2000); //даём 2сек чтобы понять ошибку
         }
@@ -229,13 +236,14 @@ void main() {
         //перерисовываем кадр
         if (run) {
             gotoStart();
-            draw(MAP, snake, len, apple_exsists, apple);
+            draw(snake, len, apple_exsists, apple, WIDTH, HEIGHT,
+                head, body, field, ch_apple, wall);
         }
 
         if (dir == 'U' || dir == 'D')
-            Sleep(150); //символ примерно вдвое больше в длину чер в ширину
+            Sleep(20); //символ примерно вдвое больше в длину чер в ширину
         else            //поэтому для перемещения по вертикали и горизонтали разная задержка
-            Sleep(45);  //чтобы змея во всех направления ползола +- одинаково
+            Sleep(10);  //чтобы змея во всех направления ползола +- одинаково
         
         
         if (!run) {
