@@ -1,0 +1,6 @@
+﻿  snake.cpp
+D:\$_MY FOLDER_$\ОПИ\lab12\Snake\snake\snake\snake.cpp(18,43): warning C4838: Преобразование из "int" в "SHORT" требует сужающего преобразования.
+D:\$_MY FOLDER_$\ОПИ\lab12\Snake\snake\snake\snake.cpp(18,48): warning C4838: Преобразование из "int" в "SHORT" требует сужающего преобразования.
+D:\$_MY FOLDER_$\ОПИ\lab12\Snake\snake\snake\snake.cpp(17,25): warning C4101: cfi: неиспользованная локальная переменная
+D:\$_MY FOLDER_$\ОПИ\lab12\Snake\snake\snake\snake.cpp(110,6): warning C4326: возвращаемый тип "main" должен быть "int", а не "void"
+  snake.vcxproj -> D:\$_MY FOLDER_$\ОПИ\lab12\Snake\snake\x64\Debug\snake.exe
