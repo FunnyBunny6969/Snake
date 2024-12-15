@@ -1,0 +1,11 @@
+﻿  snake.cpp
+K:\$MAIN$\БГТУ\ОПИ\snake\Snake\snake\snake\snake.cpp(18,43): warning C4838: Преобразование из "int" в "SHORT" требует сужающего преобразования.
+K:\$MAIN$\БГТУ\ОПИ\snake\Snake\snake\snake\snake.cpp(18,48): warning C4838: Преобразование из "int" в "SHORT" требует сужающего преобразования.
+K:\$MAIN$\БГТУ\ОПИ\snake\Snake\snake\snake\snake.cpp(17,25): warning C4101: cfi: неиспользованная локальная переменная
+K:\$MAIN$\БГТУ\ОПИ\snake\Snake\snake\snake\snake.cpp(113,13): warning C4326: возвращаемый тип "main" должен быть "int", а не "void"
+  Создание кода
+  2 of 165 functions ( 1.2%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Создание кода завершено
+  snake.vcxproj -> K:\$MAIN$\БГТУ\ОПИ\snake\Snake\snake\x64\Release\snake.exe

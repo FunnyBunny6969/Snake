@@ -52,14 +52,12 @@ void draw(int snake[2148][2], int& len, bool& apple_exsists, int apple[2],
                     if (   (i == snake[k][1]) 
                         && (j == snake[k][0])) {
                         if (k == 0) {
-                            cout << "\033[48;5;9m";
+                            //cout << "\033[48;5;20m\033[38;5;10m";
                             cout << head; //выделяем голову
-                            cout << "\033[40m";
                         }
                         else {
-                            cout << "\033[48;5;11m";
+                            //cout << "\033[48;5;11m\033[38;5;16m";
                             cout << body;
-                            cout << "\033[40m";
                         }
                         printed = true;
                         break;
@@ -69,6 +67,7 @@ void draw(int snake[2148][2], int& len, bool& apple_exsists, int apple[2],
             //если есть то нарисуем яблоко
             if (apple_exsists == true && printed == false) {
                 if (apple[0] == j && apple[1] == i) {
+                    //cout << "\033[38;5;15m\033[48;5;196m";
                     cout << ch_apple;
                     printed = true;
                 }
@@ -77,10 +76,14 @@ void draw(int snake[2148][2], int& len, bool& apple_exsists, int apple[2],
             //если в клетке не яблоко и не змея то рисуем кусок карты
             //MAP убрали, тк в процессе подход к отрисовке изменился, теперь можно без MAP
             if (printed == false) {
-                if (j == 0 || j == (WIDTH - 1) || i == 0 || i == (HEIGHT - 1))
+                if (j == 0 || j == (WIDTH - 1) || i == 0 || i == (HEIGHT - 1)) {
+                    //cout << "\033[38;5;202m\033[48;5;16m";
                     cout << wall;
-                else
+                }
+                else {
+                    //cout << "\033[40m";
                     cout << field;
+                }
             }
             printed = false;
         }
